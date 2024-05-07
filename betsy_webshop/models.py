@@ -23,16 +23,28 @@ class Product(BaseModel):
 class Tag(BaseModel):
     name = peewee.CharField(unique=True, max_length=255)
 
+class ProductTag(BaseModel):
+    product = peewee.ForeignKeyField(Product)
+    tag = peewee.ForeignKeyField(Tag)
+
+class Product(BaseModel):
+    name = peewee.CharField(unique=True, max_length=255)
+    description = peewee.TextField()
+    price_per_unit = peewee.DecimalField(max_digits=10, decimal_places=2)
+    quantity = peewee.IntegerField()
+
+    # ManyToMany relationship with Tag
+    tags = peewee.ManyToManyField(Tag, through=ProductTag)
+
 class Transaction(BaseModel):
-    buyer = peewee.ForeignKeyField (User)
-    product = peewee.ForeignKeyField (Product)
+    buyer = peewee.ForeignKeyField(User)
+    product = peewee.ForeignKeyField(Product)
     quantity = peewee.IntegerField()
 
 # Create tables if they do not exist
 def initialize_database():
     with db:
-        db.create_tables([User, Product, Tag, Transaction])         
+        db.create_tables([User, Tag, Product, ProductTag, Transaction])
 
 # Call initialize_database() function to create tables when the application starts
-
 initialize_database()
